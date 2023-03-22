@@ -127,11 +127,17 @@ class ShelfTest {
     System.out.println("*** Testing listBooks ***");
     //adding books to shelf
     testShelf.addBook(testBook);
+
+    // checking function output
+    String expected = "1 book on shelf: 1 : education\nHeadfirst Java by Grady Booch ISBN:1337 1\n";
+    String output = testShelf.listBooks();
+    assertEquals(expected, output);
+
     testShelf.addBook(testBook);
 
     // checking function output
-    String expected = "2 books on shelf: 1 : education\nHeadfirst Java by Grady Booch ISBN:1337 2\n";
-    String output = testShelf.listBooks();
+    expected = "2 books on shelf: 1 : education\nHeadfirst Java by Grady Booch ISBN:1337 2\n";
+    output = testShelf.listBooks();
     assertEquals(expected, output);
   }
 

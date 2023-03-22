@@ -75,7 +75,11 @@ public class Shelf {
     for (Book book : books.keySet()) {
       count += books.get(book);
     }
-    output = count + " books on shelf: " + this + "\n";
+    if (count != 1) {
+      output = count + " books on shelf: " + this + "\n";
+    } else {
+      output = count + " book on shelf: " + this + "\n";
+    }
 
     for (Book book : books.keySet()) {
       output = output.concat(book + " " + books.get(book) + "\n");
