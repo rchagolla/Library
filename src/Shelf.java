@@ -15,6 +15,10 @@ public class Shelf {
   private String subject;
   private HashMap<Book, Integer> books;
 
+  public Shelf() {
+
+  }
+
   public Shelf(int shelfNumber, String subject) {
     this.shelfNumber = shelfNumber;
     this.subject = subject;
