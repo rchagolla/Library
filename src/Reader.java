@@ -19,6 +19,10 @@ public class Reader {
   private String phone;
   private List<Book> books;
 
+  Reader() {
+
+  }
+
   Reader(int cardNumber, String name, String phone) {
     this.cardNumber = cardNumber;
     this.name = name;
