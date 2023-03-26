@@ -41,6 +41,5 @@ public class Main {
     csumb.listReaders(true);
     csumb.returnBook(drew,csumb.getBookByISBN("42-w-87"));
     csumb.returnBook(drew,csumb.getBookByISBN("42-w-87"));
-
   }
 }

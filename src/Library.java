@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+ * Name: Rolando Chagolla-Bonilla
+ * Date: March - 22 - 2023
+ * Description: A java object that represents a library using Shelf, Reader, Book objects.
+ */
+
 public class Library {
   public static final int LENDING_LIMIT = 5;
   private String name;
@@ -25,6 +31,7 @@ public class Library {
     books = new HashMap<>();
   }
 
+  // This method is responsible for parsing the file into a collection of objects.
   public Code init(String filename) {
     Code code;
     File f = new File(filename);
@@ -62,10 +69,6 @@ public class Library {
 
     //temp
     return code;
-  }
-
-  public List<Reader> getReaders() {
-    return readers;
   }
 
   // Returns the Integer form of the recordCountString or if error a code.
@@ -183,6 +186,7 @@ public class Library {
     return Code.SUCCESS;
   }
 
+  // adds all the shelves from file to library object.
   private Code initShelves(int shelfCount, Scanner scan) {
     if (shelfCount < 1) {
       return Code.SHELF_COUNT_ERROR;
@@ -202,11 +206,13 @@ public class Library {
     return Code.SHELF_NUMBER_PARSE_ERROR;
   }
 
+  // helper function that creates a Shelf object that will be added to library object.
   public Code addShelf(String shelfSubject) {
     Shelf shelf = new Shelf(shelves.size()+1, shelfSubject);
     return addShelf(shelf);
   }
 
+  // adds shelf made in addShelf(String) to library object.
   public Code addShelf (Shelf shelf) {
     if (!shelves.containsKey(shelf.getSubject())) {
       shelves.put(shelf.getSubject(), shelf);
@@ -223,6 +229,7 @@ public class Library {
     return Code.SHELF_EXISTS_ERROR;
   }
 
+  // adds all the readers from file to library object.
   private Code initReader(int readerCount, Scanner scan) {
     if (readerCount < 1) {
       return Code.READER_COUNT_ERROR;
@@ -254,6 +261,7 @@ public class Library {
     return Code.SUCCESS;
   }
 
+  // adds reader to the List of readers in the Library object.
   public Code addReader(Reader reader) {
     if (readers.contains(reader)) {
       System.out.println(reader.getName()+" already has an account!");
@@ -274,6 +282,22 @@ public class Library {
     return Code.SUCCESS;
   }
 
+  // removes reader from library if possible.
+  public Code removeReader(Reader reader) {
+    if (!readers.contains(reader)) {
+      System.out.println(reader);
+      System.out.println("is not part of this library");
+      return Code.READER_NOT_IN_LIBRARY_ERROR;
+    }
+    if (reader.getBooks().size() != 0) {
+      System.out.println(reader.getName()+" must return all books!");
+      return Code.READER_STILL_HAS_BOOKS_ERROR;
+    }
+    readers.remove(reader);
+    return Code.SUCCESS;
+  }
+
+  // returns a Book object from the HashMap that matches isbn.
   public Book getBookByISBN(String isbn) {
     for (Book book : books.keySet()) {
       if (book.getIsbn().equals(isbn)) {
@@ -284,6 +308,7 @@ public class Library {
     return null;
   }
 
+  // adds book to Reader object and removes book from Shelf object.
   public Code checkOutBook(Reader reader, Book book) {
     if(!readers.contains(reader)) {
       System.out.println(reader.getName()+" doesn't have an account here");
@@ -323,6 +348,7 @@ public class Library {
     return code;
   }
 
+  // removes book from reader's books.
   public Code returnBook(Reader reader, Book book) {
     if (!reader.hasBook(book)) {
       System.out.println(reader.getName()+" doesn't have "+book+" checked out");
@@ -343,6 +369,25 @@ public class Library {
     return code;
   }
 
+  // removes book from certain subject.
+  private Code addBookToShelf(Book book, Shelf shelf) {
+    Code code = returnBook(book);
+    if (code.equals(Code.SUCCESS)) {
+      return code;
+    }
+    if (book.getSubject() != shelf.getSubject()) {
+      return Code.SHELF_SUBJECT_MISMATCH_ERROR;
+    }
+    code = shelf.addBook(book);
+    if (code.equals(Code.SUCCESS)) {
+      System.out.println(book+" added to shelf");
+      return code;
+    }
+    System.out.println("could not add "+book+" to shelf");
+    return code;
+  }
+
+  // adds book to proper shelf if it exists.
   public Code returnBook(Book book) {
     if (!shelves.containsKey(book.getSubject())) {
       System.out.println("No shelf for "+book);
@@ -353,6 +398,7 @@ public class Library {
     return shelves.get(book.getSubject()).addBook(book);
   }
 
+  // returns total books and list every book in HashMap.
   public int listBooks() {
     int count = 0;
     for (Book book : books.keySet()) {
@@ -363,6 +409,7 @@ public class Library {
     return count;
   }
 
+  // lists all shelves in library and if boolean true, it also lists books in shelves.
   public Code listShelves(boolean showBooks) {
     if (!showBooks) {
       for (Shelf shelf : shelves.values()) {
@@ -376,20 +423,19 @@ public class Library {
     return Code.SUCCESS;
   }
 
+  // returns total readers in library and prints every reader.
   public  int listReaders() {
-    int count = 0;
-    for (Reader reader : readers) {
-      System.out.println(reader);
-      count++;
-    }
-
-    return count;
+    return listReaders(false);
   }
 
+  // returns total readers in library and prints every reader.
   public int listReaders(boolean showBooks) {
     int count = 0;
     if (!showBooks) {
-      count = listReaders();
+      for (Reader reader : readers) {
+        System.out.println(reader);
+        count++;
+      }
       return count;
     }
     for(Reader reader : readers) {
@@ -400,6 +446,7 @@ public class Library {
     return count;
   }
 
+  // returns shelf object with matching subject or null if none match.
   public Shelf getShelf(String subject) {
     if (!shelves.containsKey(subject)) {
       System.out.println("No shelf for "+subject+" books");
@@ -408,6 +455,7 @@ public class Library {
     return shelves.get(subject);
   }
 
+  // returns shelf object with matching shelfNumber or null if none match.
   public Shelf getShelf(Integer shelfNumber) {
     for (Shelf shelf : shelves.values()) {
       if (shelf.getShelfNumber() == shelfNumber) {
@@ -418,6 +466,7 @@ public class Library {
     return null;
   }
 
+  // returns reader object with matching cardNumber or null if none match.
   public Reader getReaderByCard(int cardNumber) {
     for (Reader reader : readers) {
       if (reader.getCardNumber() == cardNumber) {
@@ -427,5 +476,19 @@ public class Library {
     }
     System.out.println("Could not find a reader with card #"+cardNumber);
     return null;
+  }
+
+  // returns currents library card + 1
+  public  int getLibraryCard() {
+    return libraryCard + 1;
+  }
+
+  private Code errorCode(int codeNumber) {
+    for (Code code : Code.values()) {
+      if (code.getCode() == codeNumber) {
+        return code;
+      }
+    }
+    return Code.UNKNOWN_ERROR;
   }
 }
